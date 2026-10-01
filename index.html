@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Øliver's · Controle de Pedidos de Parceiros, Setembro</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<style>
+  :root{
+    --ground:#F7F7F7;--raised:#FFFFFF;--raised-2:#FAECE7;--ink:#1A1A1A;--ink-soft:#4A3530;--ink-faint:#6B6B6B;
+    --line:#EAD9D2;--line-soft:#F2E5DF;--accent:#C8402A;--accent-deep:#9E3120;--accent-soft:#C8402A55;--accent-bg:#C8402A12;
+    --gold:#9A6B1E;--gold-bg:#9A6B1E14;--warn:#B0431E;--warn-bg:#B0431E14;--ok:#3F7A48;--ok-bg:#3F7A4814;
+    --info:#3E5C8A;--info-bg:#3E5C8A14;
+    --paid:#a5203d;--paid-bg:#a5203d14;
+    --shadow:0 1px 2px #1a1a1a10, 0 8px 24px -12px #1a1a1a24;
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --maxw:960px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#000000;--raised:#0E0E0E;--raised-2:#160E0C;--ink:#F7F7F7;--ink-soft:#C7A99E;--ink-faint:#6B6B6B;
+      --line:#2A1B17;--line-soft:#1D1310;--accent:#E8735D;--accent-deep:#F0967F;--accent-soft:#E8735D55;--accent-bg:#E8735D16;
+      --gold:#D2A64E;--gold-bg:#D2A64E16;--warn:#E0795A;--warn-bg:#E0795A16;--ok:#79AE76;--ok-bg:#79AE7616;
+      --info:#7EA0D0;--info-bg:#7EA0D016;
+      --paid:#ea6e7f;--paid-bg:#ea6e7f16;
+      --shadow:0 1px 2px #0000004d, 0 10px 30px -14px #00000080;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#F7F7F7;--raised:#FFFFFF;--raised-2:#FAECE7;--ink:#1A1A1A;--ink-soft:#4A3530;--ink-faint:#6B6B6B;
+    --line:#EAD9D2;--line-soft:#F2E5DF;--accent:#C8402A;--accent-deep:#9E3120;--accent-soft:#C8402A55;--accent-bg:#C8402A12;
+    --gold:#9A6B1E;--gold-bg:#9A6B1E14;--warn:#B0431E;--warn-bg:#B0431E14;--ok:#3F7A48;--ok-bg:#3F7A4814;
+    --info:#3E5C8A;--info-bg:#3E5C8A14;--paid:#a5203d;--paid-bg:#a5203d14;
+  }
+  :root[data-theme="dark"]{
+    --ground:#000000;--raised:#0E0E0E;--raised-2:#160E0C;--ink:#F7F7F7;--ink-soft:#C7A99E;--ink-faint:#6B6B6B;
+    --line:#2A1B17;--line-soft:#1D1310;--accent:#E8735D;--accent-deep:#F0967F;--accent-soft:#E8735D55;--accent-bg:#E8735D16;
+    --gold:#D2A64E;--gold-bg:#D2A64E16;--warn:#E0795A;--warn-bg:#E0795A16;--ok:#79AE76;--ok-bg:#79AE7616;
+    --info:#7EA0D0;--info-bg:#7EA0D016;--paid:#ea6e7f;--paid-bg:#ea6e7f16;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto;}*,*::before,*::after{transition:none !important;animation:none !important;}}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;}
+
+  .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb, var(--ground) 88%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft);}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:52px;}
+  .brandmark{font-family:var(--serif);font-weight:700;letter-spacing:.01em;font-size:15px;display:flex;align-items:center;gap:8px;}
+  .brandmark .sw{width:10px;height:10px;border-radius:999px;background:var(--accent);}
+  .toggle{border:1px solid var(--line);background:var(--raised);color:var(--ink-soft);font-family:var(--sans);font-size:12px;padding:6px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .toggle:hover{border-color:var(--accent-soft);color:var(--ink);}
+  .toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .hero{padding:56px 0 34px;border-bottom:1px solid var(--line-soft);}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;}
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(32px,6.4vw,54px);line-height:1.02;margin:14px 0 12px;letter-spacing:-0.02em;text-wrap:balance;}
+  .lede{font-size:clamp(15px,2.1vw,18px);color:var(--ink-soft);max-width:64ch;text-wrap:balance;margin:0;}
+  .lede strong{color:var(--ink);}
+
+  section{padding:40px 0;border-bottom:1px solid var(--line-soft);}
+  h2{font-family:var(--serif);font-weight:700;font-size:clamp(23px,4.2vw,32px);line-height:1.08;margin:0;letter-spacing:-0.01em;}
+  .sechead{display:flex;align-items:center;gap:13px;margin:0 0 6px;}
+  .unitdot{width:30px;height:30px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex:none;background:var(--accent-bg);border:1px solid var(--accent-soft);}
+  .subhead{color:var(--ink-soft);font-size:14.5px;margin:0 0 22px;max-width:70ch;}
+  .subhead b{color:var(--ink);}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px;}
+  .stat{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);}
+  .stat .n{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1;color:var(--accent-deep);}
+  .stat .k{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:7px;}
+  .stat.total{background:var(--accent-bg);border-color:var(--accent-soft);}
+  @media (min-width:720px){.stats{grid-template-columns:repeat(4,1fr);}}
+
+  .legend{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px;}
+
+  .badge{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;border:1px solid transparent;}
+  .b-parceria{color:#fff;background:var(--accent);}
+  .b-campanha{color:var(--info);background:var(--info-bg);border-color:var(--info);}
+  .b-loja{color:var(--ok);background:var(--ok-bg);border-color:var(--ok);}
+  .b-retirada{color:var(--ink-soft);background:var(--raised-2);border-color:var(--line);}
+  .b-falha{color:var(--warn);background:var(--warn-bg);border-color:var(--warn);}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:15px;margin-top:6px;}
+  @media (min-width:720px){.grid{grid-template-columns:1fr 1fr;}}
+  .order{background:var(--raised);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;}
+  .order.dim{opacity:.72;background:var(--raised-2);}
+  .ohead{padding:14px 17px 11px;border-top:4px solid var(--accent);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .order.cp .ohead{border-top-color:var(--info);}
+  .order.lj .ohead{border-top-color:var(--ok);}
+  .order.rt .ohead{border-top-color:var(--ink-faint);}
+  .order.fl .ohead{border-top-color:var(--warn);}
+  .odate{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink-faint);display:block;margin-bottom:2px;}
+  .oname{font-family:var(--serif);font-size:18px;font-weight:700;line-height:1.15;color:var(--ink);}
+  .obody{padding:2px 17px 15px;display:flex;flex-direction:column;gap:9px;flex:1;}
+  .omotivo{font-size:13px;color:var(--ink-soft);background:var(--raised-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 12px;margin:8px 0 0;}
+  .order.cp .omotivo{border-left-color:var(--info);}
+  .order.lj .omotivo{border-left-color:var(--ok);}
+  .order.rt .omotivo{border-left-color:var(--ink-faint);}
+  .order.fl .omotivo{border-left-color:var(--warn);}
+  .omotivo b{color:var(--ink);}
+  .statustag{display:inline-block;align-self:flex-start;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--paid-bg);color:var(--paid);border:1px solid var(--paid);}
+  .items{list-style:none;margin:0;padding:0;display:grid;gap:6px;}
+  .items li{position:relative;padding-left:16px;font-size:13.3px;color:var(--ink-soft);}
+  .items li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--accent);}
+  .order.cp .items li::before{background:var(--info);}
+  .order.lj .items li::before{background:var(--ok);}
+  .order.rt .items li::before{background:var(--ink-faint);}
+  .order.fl .items li::before{background:var(--warn);}
+  .ofoot{margin-top:auto;padding-top:11px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:4px;font-size:12.3px;color:var(--ink-faint);}
+  .ofoot span b{color:var(--ink-soft);font-weight:600;}
+
+  .flnote{display:flex;gap:10px;align-items:flex-start;background:var(--warn-bg);border:1px solid var(--warn);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+  .flnote .ic{font-size:17px;flex:none;}
+  .flnote b{color:var(--ink);}
+
+  .howto{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);margin-top:22px;}
+  .howto h3{font-family:var(--serif);font-size:17px;margin:0 0 10px;}
+  .howto ul{margin:0;padding-left:18px;display:grid;gap:6px;}
+  .howto li{font-size:13.5px;color:var(--ink-soft);}
+  .howto li b{color:var(--ink);}
+
+  footer{padding:34px 0 60px;padding-bottom:calc(60px + env(safe-area-inset-bottom,0px));}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:20px 44px;}
+  .foot-grid .fk{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:6px;}
+  .foot-grid .fv{font-size:14px;color:var(--ink-soft);}
+  .stamp{margin-top:24px;font-size:12px;color:var(--ink-faint);}
+
+  @media print{
+    :root{color-scheme:light;}
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+    body{background:#fff;}.topbar{position:static;}.toggle{display:none;}
+    section,.order{break-inside:avoid;}.hero{padding-top:20px;}
+    .grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap"><span class="brandmark"><span class="sw"></span>Øliver's · Controle de Parceiros</span><button class="toggle" id="tt" aria-label="Alternar tema">◐ Tema</button></div></div>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Marketing · Prestação de contas</div>
+  <h1>Pedidos de parceiros, setembro</h1>
+  <p class="lede">Consolidação de <strong>todos os pedidos de parceiros liberados pela Øliver's em setembro/2026</strong>, nas unidades com pedido no mês: São Gonçalo, Niterói, Cabo Frio, Araruama, Lapa e Itaipuaçu. Cada pedido traz <strong>data, motivo, itens, endereço e telefone</strong> exatamente como foi registrado com o Marketing.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">📊</span><h2>Resumo</h2></div>
+  <p class="subhead">Período coberto: <b>setembro/2026</b>. Total de <b>20 pedidos</b> registrados nas unidades com movimento no mês. Maricá e Copacabana não tiveram pedido em setembro.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">6</div><div class="k">São Gonçalo</div></div>
+    <div class="stat"><div class="n">7</div><div class="k">Niterói</div></div>
+    <div class="stat"><div class="n">1</div><div class="k">Cabo Frio</div></div>
+    <div class="stat"><div class="n">4</div><div class="k">Araruama</div></div>
+    <div class="stat"><div class="n">1</div><div class="k">Lapa</div></div>
+    <div class="stat"><div class="n">1</div><div class="k">Itaipuaçu</div></div>
+  </div>
+
+  <div class="legend">
+    <span class="badge b-parceria">Parceria</span>
+    <span class="badge b-loja">Na loja (reserva/rodízio)</span>
+    <span class="badge b-retirada">Retirada na loja</span>
+  </div>
+
+  <div class="howto">
+    <h3>Como ler esta base</h3>
+    <ul>
+      <li><b>Parceria:</b> pedido de delivery liberado pra um parceiro/creator, majoritariamente ligado à campanha Coyote vs. Acme.</li>
+      <li><b>Na loja:</b> rodízio ou mesa reservada, consumido presencialmente (não é delivery).</li>
+      <li><b>Retirada:</b> pedido retirado na loja pelo próprio parceiro ou por terceiro indicado.</li>
+      <li><b>💰 Publi Paga:</b> pedido pago (não é permuta), sinalizado à parte pra bater com o financeiro.</li>
+    </ul>
+  </div>
+</div></section>
+
+<!-- ==================== SÃO GONÇALO ==================== -->
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">🏙️</span><h2>São Gonçalo</h2></div>
+  <p class="subhead"><b>6 pedidos válidos</b> · delivery, retirada e experiências na loja.</p>
+
+  <div class="grid">
+
+    <article class="order rt"><div class="ohead"><div><span class="odate">01/09 · 19h30</span><span class="oname">Quesia Machado</span></div><span class="badge b-retirada">Retirada</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Coyote vs. Acme, Combo Foguete, retirada.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada: 1/2 Frango com Requeijão + 1/2 Golden Aussie</li>
+        <li>1× Pizza Doce Média: 1/2 Brownie + 1/2 Torta de Limão (caixa Coyote vs. Acme)</li>
+        <li>3× Ingresso do filme</li>
+        <li>1× Matte Leão 1,5L</li>
+      </ul>
+      <div class="ofoot"><span><b>📞</b> +55 21 98220-2839</span></div>
+    </div></article>
+
+    <article class="order rt"><div class="ohead"><div><span class="odate">04/09</span><span class="oname">Iago Carvalho</span></div><span class="badge b-retirada">Retirada</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido conjunto com a Sara Tavares, aniversário dela. Parte do Iago, só.</p>
+      <ul class="items">
+        <li>2× Pizza Grande Salgada</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Retirada em São Gonçalo</span></div>
+    </div></article>
+
+    <article class="order rt"><div class="ohead"><div><span class="odate">04/09</span><span class="oname">Sara Tavares</span></div><span class="badge b-retirada">Retirada</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido único de aniversário, conjunto com o Iago Carvalho.</p>
+      <ul class="items">
+        <li>7× Pizza Grande Salgada: golden aussie, camarão c/catupiry e alho poró, calabresa suprema, frango c/catupiry, carne seca c/catupiry, queijo coalho com geleia de pimenta, 4 queijos</li>
+        <li>3× Pizza Média Doce: goiabada maravilhosa, banana na neve, nutella na neve</li>
+      </ul>
+      <div class="ofoot"><span><b>📞</b> +55 21 96812-7474</span></div>
+    </div></article>
+
+    <article class="order"><div class="ohead"><div><span class="odate">a confirmar · 20h30</span><span class="oname">Felipe Campos</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Coyote vs. Acme, Combo Foguete.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada: 1/2 Marie + 1/2 Golden Aussie, borda de catupiry com bacon</li>
+        <li>1× Pizza Doce Média: 1/2 Paçoquita + 1/2 Mesclado M&amp;M's</li>
+        <li>1× Coca 1,5L</li>
+        <li>5× Ingresso do filme</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Rua Gurupá, 105, Lindo Parque, São Gonçalo</span>
+        <span><b>📞</b> +55 21 96470-1541</span>
+      </div>
+    </div></article>
+
+    <article class="order lj"><div class="ohead"><div><span class="odate">16/09 · 19h30</span><span class="oname">Iago Carvalho</span></div><span class="badge b-loja">Na loja</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Reserva de parceiro.</p>
+      <ul class="items">
+        <li>1× Rodízio (mesa pra 3 pessoas)</li>
+        <li>3× Bebida</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Mesa reservada pra 3 pessoas</span></div>
+    </div></article>
+
+    <article class="order lj"><div class="ohead"><div><span class="odate">18/09 · 20h00</span><span class="oname">Augustus Blues</span></div><span class="badge b-loja">Na loja</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Reserva de parceiro, levou 3 amigas influenciadoras de São Gonçalo.</p>
+      <ul class="items">
+        <li>1× Rodízio (mesa pra 4 pessoas)</li>
+        <li>1× Bebida por pessoa</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Mesa reservada pra 4 pessoas</span></div>
+    </div></article>
+
+  </div>
+</div></section>
+
+<!-- ==================== NITERÓI ==================== -->
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">🌉</span><h2>Niterói</h2></div>
+  <p class="subhead"><b>7 pedidos válidos</b> · delivery, retirada e experiências na loja.</p>
+
+  <div class="grid">
+
+    <article class="order"><div class="ohead"><div><span class="odate">01/09 · 20h30</span><span class="oname">Quezia Coutinho</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Coyote vs. Acme, com caixa temática.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada: 1/2 Lombo com Requeijão + 1/2 Calabresa, bacon e catupiry Marie, borda de bacon com catupiry</li>
+        <li>1× Pizza Doce Média: inteira de Mesclado M&amp;M's (caixa Coyote vs. Acme)</li>
+        <li>2× Ingresso do filme</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Rua Vereador Duque Estrada, 39, ap 308</span>
+        <span><b>📞</b> 21 97006-4877</span>
+      </div>
+    </div></article>
+
+    <article class="order rt"><div class="ohead"><div><span class="odate">09/09 · 20h00</span><span class="oname">Ingryd</span></div><span class="badge b-retirada">Retirada</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Combo Coyote vs. Acme.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada: 1/2 Marie + 1/2 Calabresa sem cebola</li>
+        <li>1× Pizza Doce Média: Mineiro na Neve (caixa temática)</li>
+        <li>2× Ingresso do filme</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Retirada em Niterói</span></div>
+    </div></article>
+
+    <article class="order"><div class="ohead"><div><span class="odate">24/09 · 20h30</span><span class="oname">Iza Chilena</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido do mês.</p>
+      <ul class="items">
+        <li>2× Pizza Salgada Gigante: (1) 1/2 Pepperoni/bacon/cream cheese/parmesão/barbecue Maverick + 1/2 Lombo com Requeijão · (2) 1/2 Golden Aussie + 1/2 Frango com Requeijão Cremoso Santa Maria</li>
+        <li>1× Pizza Doce Média: Torta de Limão</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Noronha Torrezão, 407, Bloco 07, Apt 302</span>
+        <span><b>📞</b> +55 21 97207-5006</span>
+      </div>
+    </div></article>
+
+    <article class="order"><div class="ohead"><div><span class="odate">24/09 · 20h30</span><span class="oname">Maria Leite</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido do mês.</p>
+      <ul class="items">
+        <li>1× Pizza Grande Salgada: Maverick (EUA), metade peperoni</li>
+        <li>1× Pizza Doce Média: Banana na Neve</li>
+        <li>1× Coca 1,5L</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Rua do Colégio, 9</span>
+        <span><b>📞</b> +55 21 98531-2916</span>
+      </div>
+    </div></article>
+
+    <article class="order lj"><div class="ohead"><div><span class="odate">24/09 · 20h00</span><span class="oname">Ingryd</span></div><span class="badge b-loja">Na loja</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Reserva de parceiro.</p>
+      <ul class="items">
+        <li>1× Rodízio (mesa pra 3 pessoas)</li>
+        <li>1× Bebida por pessoa</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Mesa reservada pra 3 pessoas</span></div>
+    </div></article>
+
+    <article class="order lj"><div class="ohead"><div><span class="odate">27/09 · 19h30</span><span class="oname">Beatriz Vilela</span></div><span class="badge b-loja">Na loja</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Reserva de parceira pontual.</p>
+      <ul class="items">
+        <li>1× Rodízio (mesa pra 2 pessoas)</li>
+        <li>1× Bebida por pessoa</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Mesa reservada pra 2 pessoas</span></div>
+    </div></article>
+
+    <article class="order"><div class="ohead"><div><span class="odate">29/09 · 19h30</span><span class="oname">Quezia Coutinho</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido do mês.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada, borda de bacon: 1/2 Frango com Catupiry + 1/2 Toscana</li>
+        <li>1× Pizza Média Doce: 1/2 Banana na Neve + 1/2 Mesclado M&amp;M's</li>
+        <li>1× Pizza Pequena Doce: Torta de Limão</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Rua Vereador Duque Estrada, 39, ap 308</span>
+        <span><b>📞</b> 21 97006-4877</span>
+      </div>
+    </div></article>
+
+  </div>
+</div></section>
+
+<!-- ==================== CABO FRIO ==================== -->
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">🏝️</span><h2>Cabo Frio</h2></div>
+  <p class="subhead"><b>1 pedido válido</b> · experiência na loja.</p>
+
+  <div class="grid">
+
+    <article class="order lj"><div class="ohead"><div><span class="odate">16/09 · 19h30</span><span class="oname">Clara Azeredo</span></div><span class="badge b-loja">Na loja</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Reserva de parceira.</p>
+      <ul class="items">
+        <li>1× Rodízio (mesa pra 2 pessoas)</li>
+        <li>2× Bebida</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Mesa reservada pra 2 pessoas. Conteúdo ainda não postado até o fechamento deste controle.</span></div>
+    </div></article>
+
+  </div>
+</div></section>
+
+<!-- ==================== ARARUAMA ==================== -->
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">🦩</span><h2>Araruama</h2></div>
+  <p class="subhead"><b>4 pedidos válidos</b> · delivery e experiência na loja.</p>
+
+  <div class="grid">
+
+    <article class="order"><div class="ohead"><div><span class="odate">09/09 · 21h00</span><span class="oname">Sabryna Michaeli</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido do mês, parceira em teste.</p>
+      <ul class="items">
+        <li>1× Pizza Grande Salgada: Filé com Gorgonzola e Camarão com Catupiry</li>
+        <li>1× Pizza Doce Pequena: Torta de Limão</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Dom Pedro II, 150, casa 101, XV de Novembro (Nossa Senhora de Nazareth)</span>
+        <span><b>📞</b> 24 98131-2611</span>
+      </div>
+    </div></article>
+
+    <article class="order"><div class="ohead"><div><span class="odate">11/09 · 19h00</span><span class="oname">Bianca Gomes</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido do mês.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada: 1/2 Filé com Gorgonzola + 1/2 Carne Seca com Catupiry</li>
+        <li>1× Pizza Doce Média: 1/2 Banana Mineira + 1/2 Torta de Limão</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Rua Mascarenhas de Morais, nº 18, Casa 2 andares ao lado de galpão, Boa Perna</span>
+        <span><b>📞</b> +55 22 98832-2495</span>
+      </div>
+    </div></article>
+
+    <article class="order lj"><div class="ohead"><div><span class="odate">16/09 · 19h30</span><span class="oname">Bianca Gomes</span></div><span class="badge b-loja">Na loja</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Reserva de parceira, Semana do Cliente.</p>
+      <ul class="items">
+        <li>1× Rodízio (mesa pra 3 pessoas)</li>
+        <li>3× Bebida</li>
+      </ul>
+      <div class="ofoot"><span><b>🍽️</b> Mesa reservada pra 3 pessoas</span></div>
+    </div></article>
+
+    <article class="order"><div class="ohead"><div><span class="odate">26/09 · 19h00</span><span class="oname">Bianca Gomes</span></div><span class="badge b-parceria">Parceria</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido do mês.</p>
+      <ul class="items">
+        <li>1× Pizza Gigante Salgada: 1/2 Filé com Gorgonzola + 1/2 Marie</li>
+        <li>1× Pizza Doce Média: 1/2 Mineira + 1/2 Torta de Limão</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Rua Prefeito Mário Castanho, 615, Coqueiral</span>
+        <span><b>📞</b> +55 22 98832-2495</span>
+      </div>
+    </div></article>
+
+  </div>
+</div></section>
+
+<!-- ==================== LAPA ==================== -->
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">🎭</span><h2>Lapa</h2></div>
+  <p class="subhead"><b>1 pedido válido</b> · só delivery.</p>
+
+  <div class="grid">
+
+    <article class="order"><div class="ohead"><div><span class="odate">13/09</span><span class="oname">Victórya Gabrielle</span></div><span class="badge b-parceria">Parceria</span><span class="statustag">💰 Publi Paga</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> 2º pedido do teste fixo de 2 meses. Publicação paga (R$ 800) combinada com os 2 pedidos do teste.</p>
+      <ul class="items">
+        <li>2× Pizza Grande Salgada: 1/2 Camarão com Catupiry borda de requeijão + 1/2 Mussarela com Tomate Seco e Rúcula borda catupiry</li>
+        <li>1× Pizza Doce Média: Brigadeiro</li>
+      </ul>
+      <div class="ofoot"><span>Pedido 1 do teste foi em 31/08 (agosto), não entra nesta contagem de setembro.</span></div>
+    </div></article>
+
+  </div>
+</div></section>
+
+<!-- ==================== ITAIPUAÇU ==================== -->
+<section><div class="wrap">
+  <div class="sechead"><span class="unitdot">🏘️</span><h2>Itaipuaçu</h2></div>
+  <p class="subhead"><b>1 pedido válido</b> · delivery.</p>
+
+  <div class="grid">
+
+    <article class="order"><div class="ohead"><div><span class="odate">11/09 · 20h00</span><span class="oname">Duda Antunes</span></div><span class="badge b-parceria">Parceria</span><span class="statustag">💰 Publi parcial</span></div>
+    <div class="obody">
+      <p class="omotivo"><b>Motivo:</b> Pedido mega especial, convite de padrinhos e madrinhas do casamento dela. Parte paga à parte pela própria parceira.</p>
+      <ul class="items">
+        <li>Parceria/consumo parceiro: 5× Pizza Grande Salgada (Camarão com Catupiry, Bounce com borda de cream cheese, Filé com Gorgonzola, Queijo Coalho com Geleia de Pimenta, Golden Aussie)</li>
+        <li>Pago à parte pela parceira: 3× Pizza Grande Salgada (Frango com Requeijão, Carne Seca com Catupiry, Quatro Queijos) + 2× Pizza Média Doce (Banana na Neve, Love Feelings)</li>
+      </ul>
+      <div class="ofoot">
+        <span><b>📍</b> Condomínio Residencial Jardins da Costa, Rodovia Amaral Peixoto, 352</span>
+        <span><b>📞</b> +55 21 98144-8619</span>
+      </div>
+    </div></article>
+
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="foot-grid">
+    <div><div class="fk">Escopo</div><div class="fv">Pedidos de parceiros · Øliver's · setembro/2026 · 6 unidades com movimento</div></div>
+    <div><div class="fk">Contato Marketing</div><div class="fv">Comunicação (Manoela) · Social (Luíza)</div></div>
+    <div><div class="fk">Fonte</div><div class="fv">Controle mensal de parceiros, setembro (cs-olivers#182)</div></div>
+  </div>
+  <div class="stamp">Øliver's · Grupo Rob · controle de pedidos de parceiros · gerado em outubro/2026 · documento interno</div>
+</div></footer>
+
+<script>(function(){var b=document.getElementById('tt');if(!b)return;b.addEventListener('click',function(){var r=document.documentElement;var c=r.getAttribute('data-theme');if(!c)c=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';r.setAttribute('data-theme',c==='dark'?'light':'dark');});})();</script>
+</body></html>
